@@ -1,0 +1,213 @@
+<html>
+<html lang="en-US" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bulk Sms Sender</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400,600,700" rel="stylesheet">
+    <link href="/css/sendsms.css" rel="stylesheet" type="text/css">
+
+
+    <!-- <script type="text/javascript" src="../js/sendsms.js"></script> -->
+
+
+</head>
+
+<body>
+    <input class="btn logout-button" type="button" value="Logout" onclick="logout()">
+    <div class="popapulbge dT" id="successMsg" style="position: fixed;display: none;">
+        <div class="success" style="margin-left: 30%;position: fixed;padding: 9px;border: 2px solid #e2e2e2;">
+            <span class="iconbox"><span class="successicon"></span></span>
+            <span class="sucesText f16 fR">Template Created Successfully</span>
+            <span class="clo-icon">&nbsp;</span>
+        </div>
+    </div>
+
+    <div id="create" style="display: none;">
+        <div class="maindiv">
+            <div class="popupPageTitle pL30 pR30">
+                New Template
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <div class="maindiv">
+
+        <div class="pageContent" style="margin-left:20px;">
+            <form id="sendsms_form" method="post" class="form-style" onsubmit="return false;"
+                enctype="multipart/form-data">
+                <div id="getTemp">
+                    <div id="printPreviewPop" class="whiteBg" style="margin: 0 auto;">
+                        <div class="inner-section">
+                            <table class="table-form">
+                                <tbody>
+                                    <h3 class="pg-title"> Bulk SMS Sender</h3>
+                                    <tr id="text_number">
+
+                                        <td colspan="2">
+                                            <div class="msg-container">
+                                                <div class="msg-header">Phone Numbers
+                                                </div>
+
+                                                <div class="msg-body">
+                                                    <textarea id="phoneNumber"
+                                                        placeholder="Enter Phone Numbers seperated by Commas"
+                                                        style="border: 0px; padding: 5px; width: 588px; height: 105px; margin: 0px; z-index: auto; position: relative; line-height: normal; font-size: 14px; transition: none; background: transparent !important;"></textarea>
+                                                </div>
+                                                <div class="msg-footer" style="padding-bottom:20px;">&nbsp;</div>
+                                                <!-- <div style="font-size: 12px;padding-top:3px;"><span class="bold">Note:</span>&nbsp;Maximum 50 Number</div>
+                                            <div class="msg_error" style="color:red;font-size:15px;display:none;">Please enter the message content.</div> -->
+                                        </td>
+                                    </tr>
+
+                                    <tr id="text_msg">
+                                        <td colspan="2">
+                                            <div class="msg-container">
+                                                <div class="msg-header">Message
+                                                </div>
+
+                                                <div class="msg-body">
+                                                    <textarea placeholder="Type your message here..." id="msgTxt"
+                                                        style="border: 0px; padding: 5px; width: 588px; height: 105px; margin: 0px; z-index: auto; position: relative; line-height: normal; font-size: 14px; transition: none; background: transparent !important;"></textarea>
+                                                </div>
+                                                <div class="msg-footer" style="padding-bottom:20px;">&nbsp;</div>
+                                                <div style="font-size: 12px;padding-top:3px;"><span
+                                                        class="bold">Note:</span>&nbsp;Maximum 300 characters allowed
+                                                </div>
+                                                <div class="msg_error" style="color:red;font-size:15px;display:none;">
+                                                    Please enter the message content.</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <div class="fR">
+                                                <input type="button" value="Clear" onclick="clearInput(true);"
+                                                    class="btn normalbtn cancelbtn">
+                                                <input type="button" value="Send" onclick="sendSms()"
+                                                    class="btn primarybtn sendbtn">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div id="failureReport"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="error_msg" id="error_msg" style="display:none">
+                <ul style="padding:0; margin:0" id="errors"></ul>
+            </div>
+            <div style="z-index: 999999 " id="statusReport"></div>
+
+        </div>
+    </div>
+
+    <div class="sms_error" style="display:none;">You can send 50 SMS at a time.</div>
+
+
+</body>
+<script>
+    let phoneNumber = document.getElementById('phoneNumber');
+    let msgTxt = document.getElementById('msgTxt');
+
+
+    console.log(localStorage.getItem('login'))
+    if (localStorage.getItem('login') !== 'yes') {
+          window.location = '/login'
+    }
+
+
+
+
+ 
+    function clearInput() {
+        phoneNumber.value = '';
+        msgTxt.value = '';
+
+    }
+
+    function sendSms() {
+
+        let phoneNumberList = phoneNumber.value.split(",");
+        let message = msgTxt.value.trim();
+
+        for (let i = 0; i < phoneNumberList.length; i++) {
+            phoneNumberList[i] = phoneNumberList[i].trim().replace(/(?:\r\n|\r|\n)/g, '');
+            console.log(phoneNumberList)
+
+            if (!phoneNumberList[i] || !phoneNumberList[i].startsWith('+')) {
+                return alert('All phone Number must start with +countrycode')
+            }
+
+        }
+        if (!message || message.length > 300) {
+            return alert('message must be smaller than 300 characters')
+        }
+        let req_body = {
+            phoneNumber: phoneNumberList,
+            message: message,
+        }
+        console.log(req_body)
+        postData("/send_message", req_body).then((data) => {
+
+            console.log(data); // JSON data parsed by `data.json()` call
+            alert(data.message)
+        });
+
+    }
+
+
+
+
+    function logout() {
+
+
+
+        postData("/logout", {}).then((data) => {
+            localStorage.removeItem('login')
+            window.location = '/login'
+        });
+
+    }
+
+
+
+
+
+
+
+    async function postData(url = "", data = {}) {
+        // Default options are marked with *
+        try {
+            const response = await fetch(url, {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                // mode: "cors", // no-cors, *cors, same-origin
+                // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: "same-origin", // include, *same-origin, omit
+                headers: {
+                    "Content-Type": "application/json",
+
+                },
+
+                body: JSON.stringify(data), // body data type must match "Content-Type" header
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
+        catch (err) {
+            console.log(err);
+            return err;
+        }
+
+    }
+</script>
+
+</html>

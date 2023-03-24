@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- link css  -->
+    <link rel="stylesheet" href="../css/login.css">
+
+    <!-- icons  -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+        integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+
+    <title>Login with us</title>
+</head>
+
+<body>
+    <div class=" flex-r container">
+        
+        <div class="flex-r login-wrapper">
+            <div class="login-text">
+                <div class="logo">
+                    <span><i class="fab fa-speakap"></i></span>
+                    <span>Bulk SMS Sender</span>
+                  
+                </div>
+                <h1>Log In</h1>
+             
+
+                <form class="flex-c">
+                    <div class="input-box">
+                        <span class="label">Username</span>
+                        <div class=" flex-r input">
+                            <input id="username" type="text" placeholder="Enter Username">
+                            <i class="fas fa-at"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="input-box">
+                        <span class="label">Password</span>
+                        <div class="flex-r input">
+                            <input id="password" type="password" placeholder="Enter Password">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+
+        
+
+                    <input class="btn" type="button" value="Login" onclick="login()">
+                    <span class="extra-line">
+                       
+                  
+                    </span>
+                </form>
+
+            </div>
+        </div>
+
+        <img class="img-box"  draggable="false" src="../img/img3.jpg"> </img>
+    </div>
+</body>
+<script>
+    let password = document.getElementById('password');
+    let username = document.getElementById('username');
+    // let login = document.getElementById('login');
+
+
+
+
+
+
+
+    // ck="clearInput(true);"
+    //                                                 class="btn normalbtn cancelbtn">
+    //                                             <input type="button" value="Send" onclick="sendSms()"
+    function clearInput( ) {
+        phoneNumber.value = ''; 
+        msgTxt.value = ''; 
+        
+    }
+
+    function login( ) {
+ 
+         let curr_password = password.value.trim(); 
+         let curr_username = username.value.trim(); 
+
+    
+         if( !curr_username || !curr_password){
+            return alert( 'must have Username and Password')
+         }
+        let req_body = {
+        password: curr_password ,
+        username :curr_username ,
+    }
+    console.log( req_body)
+    postData("/login", req_body).then((data) => {
+
+        console.log(data); // JSON data parsed by `data.json()` call
+        if( data.message  == 'Verified Successfully'){
+            localStorage.setItem('login' , 'yes'); 
+            window.location = '/home';
+        }
+        else{
+            alert(data.message)
+
+        }
+    });
+
+    }
+
+
+
+
+
+
+
+
+
+
+    async function postData(url = "", data = {}) {
+        // Default options are marked with *
+        try {
+            const response = await fetch(url, {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                // mode: "cors", // no-cors, *cors, same-origin
+                // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: "same-origin", // include, *same-origin, omit
+                headers: {
+                    "Content-Type": "application/json",
+
+                },
+
+                body: JSON.stringify(data), // body data type must match "Content-Type" header
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
+        catch (err) {
+            console.log(err);
+            return err;
+        }
+
+    }
+</script>
+
+</html>
