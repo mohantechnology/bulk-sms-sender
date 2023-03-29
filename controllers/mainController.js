@@ -102,7 +102,7 @@ let errList = [ ];
   for (let i = 0; i < phoneNumberList.length; i++) {
     try{
       await    client.messages.create({
-        body:  req.body.message + [i], 
+        body:  req.body.message , 
         from:  process.env.SENDER_NUMBER ,
         to: phoneNumberList[i]
       })
